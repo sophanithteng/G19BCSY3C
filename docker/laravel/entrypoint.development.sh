@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 
-composer install
-wait $!
 php artisan key:generate
-wait $!
+
+echo "Waiting 20 seconds for MySQL to initialize..."
+sleep 20
+
+echo "Running migrations..."
 php artisan migrate
-wait $!
+
+echo "Starting Laravel server..."
 php artisan serve --host=0.0.0.0 --port=8000
