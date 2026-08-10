@@ -1,13 +1,9 @@
 #!/bin/bash
 set -e
 
-# composer install
-# wait $!
-# npm install
-# wait $!
+# composer install --no-interaction --prefer-dist
 php artisan key:generate
-wait $!
 php artisan migrate
-wait $!
-
+php artisan storage:link
 exec supervisord -c /etc/supervisor/conf.d/supervisord.development.conf
+e
