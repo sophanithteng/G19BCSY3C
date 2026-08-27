@@ -22,6 +22,7 @@ class GoogleOAuthController extends Controller
 
         return response(['redirect_url' => $redirectUrl], 200);
     }
+
     function googleOAuthCallback(Request $request)
     {
         $callback_url = base64_decode($request->query('state', ''));
@@ -33,13 +34,18 @@ class GoogleOAuthController extends Controller
 
         $user = User::firstOrCreate(
             ['email' => $googleUser->getEmail()],
-            ['name' => $googleUser->getName()]
+            [
+                'name' => $googleUser->getName(),
+            ]
         );
+
+        if ($user->status === 'DISABLED') {
+            return redirect($callback_url . '?error=account_disabled');
+        }
 
         $user->save();
 
-        if (!$user->hasVerifiedEmail())
-        {
+        if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 
