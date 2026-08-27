@@ -2,7 +2,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <router-link to="/" class="brand-link">
       <img :src="logoImage" alt="Chat System Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">NPIC Chat Community</span>
+      <span class="brand-text font-weight-light">Chat System</span>
     </router-link>
 
     <div class="sidebar">
@@ -49,6 +49,15 @@
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
+              </p>
+            </router-link>
+          </li>
+          <li class="nav-header" v-if="userStore.isAdmin">MANAGEMENT</li>
+          <li class="nav-item" v-if="userStore.isAdmin">
+            <router-link :to="{ name: 'users' }" active-class="active" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Users
               </p>
             </router-link>
           </li>
