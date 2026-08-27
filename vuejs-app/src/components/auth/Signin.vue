@@ -44,6 +44,9 @@
             <button @click="googleSignIn()" class="btn btn-block btn-danger">
               <i class="fab fa-google mr-2"></i> Sign in with Google
             </button>
+             <!-- <button @click="githubSignIn()" class="btn btn-block btn-dark mt-2">
+              <i class="fab fa-github mr-2"></i> Sign in with Github
+            </button> -->
           </div>
           <p class="mb-1">
             <router-link :to="{ name: 'auth.signup' }" class="text-center">Register a new membership</router-link>

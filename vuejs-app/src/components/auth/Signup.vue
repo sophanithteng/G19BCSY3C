@@ -121,7 +121,7 @@ async function signUp() {
     return MessageModal({
       icon: "success",
       title: "Success",
-      text: "Your account has been created successfully."
+      text: "Your account has been created successfully. Please check your email for a verification link."
     });
   } catch (error) {
     const { response } = error;

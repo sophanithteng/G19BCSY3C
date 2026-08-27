@@ -4,7 +4,7 @@ const APP_API_URL = import.meta.env.VITE_APP_API_URL;
 const APP_VERIFY_EMAIL_URL = import.meta.env.VITE_APP_VERIFY_EMAIL_URL;
 const APP_RESET_PASSWORD_URL = import.meta.env.VITE_APP_RESET_PASSWORD_URL;
 
-export async function apiSignUp(user) {
+export async function apiSignUp(user) {2
   return await axios.post(APP_API_URL + '/signup', {
     ...user,
     callback_url: APP_VERIFY_EMAIL_URL,
