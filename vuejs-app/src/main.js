@@ -31,8 +31,16 @@ axios.interceptors.request.use((config) => {
 });
 
 router.beforeEach(async (to, from) => {
-  const { guarded } = to.meta;
-  if (guarded === undefined) { // if the route is not guarded, we don't need to verify the token
+  const { guarded, skipAuthCheck } = to.meta;
+  if (guarded === undefined || skipAuthCheck) { // public routes do not need token verification
+    return;
+  }
+
+  const token = userStore.getSanctumToken();
+  if (!token) {
+    if (guarded) {
+      return { name: 'auth.signin' };
+    }
     return;
   }
 

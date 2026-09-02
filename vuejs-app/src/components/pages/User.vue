@@ -136,7 +136,7 @@ const columns = [
   },
   {
     accessorKey: "action",
-    header: () => [
+    header: () => h("span", {}, [
       "Actions",
       h(
         "button",
@@ -146,12 +146,12 @@ const columns = [
         },
         "Create"
       ),
-    ],
+    ]),
     cell: ({
       row: {
         original: { id, status },
       },
-    }) => [
+    }) => h("span", {}, [
         // delete btn
         h(
           "button",
@@ -180,7 +180,7 @@ const columns = [
           },
           h("i", { class: status === "ENABLED" ? "fa fa-ban" : "fa fa-check" })
         ),
-      ],
+      ]),
     enableSorting: false,
   },
 ];

@@ -61,7 +61,7 @@ const router = createRouter({
       path: '/google/oauth/callback',
       name: 'auth.google.oauth.callback',
       component: GoogleOAuth,
-      meta: { guarded: false },
+      meta: { guarded: false, skipAuthCheck: true },
     },
     {
       path: '/dashboard',

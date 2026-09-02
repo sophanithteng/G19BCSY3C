@@ -42,6 +42,12 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
 
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'Email or password is incorrect.',
+            ]);
+        }
+
         if (!$user->hasVerifiedEmail()) {
             throw ValidationException::withMessages([
                 'email' => 'Email is not verified.',
@@ -51,12 +57,6 @@ class AuthController extends Controller
         if ($user->status === 'DISABLED') {
             throw ValidationException::withMessages([
                 'email' => 'Your account has been disabled. Please contact support.',
-            ]);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'password' => 'Password does not match.',
             ]);
         }
 

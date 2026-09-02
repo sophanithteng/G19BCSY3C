@@ -25,7 +25,7 @@
             <th v-for="header in headerGroup.headers" :key="header.id"
               :class="{ 'can-sort': header.column.getCanSort() }"
               @click="header.column.getToggleSortingHandler()?.($event)">
-              <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
+              <FlexRender :header="header" />
               {{ { asc: " ↓", desc: " ↑" }[header.column.getIsSorted()] }}
             </th>
           </tr>
@@ -33,7 +33,7 @@
         <tbody>
           <tr v-for="row in table.getRowModel().rows" :key="row.id">
             <td v-for="cell in row.getVisibleCells()" :key="cell.id">
-              <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              <FlexRender :cell="cell" />
             </td>
           </tr>
         </tbody>
@@ -44,7 +44,7 @@
         <div class="col-md text-nowrap mb-2">
           <div class="d-flex justify-content-between">
             <div class="col-auto my-auto">
-              <span>Page {{ table.getState().pagination.pageIndex + 1 }} of
+                <span>Page {{ table.atoms.pagination.get().pageIndex + 1 }} of
                 {{ table.getPageCount() }} -
                 {{ table.getFilteredRowModel().rows.length }}
                 {{
@@ -120,12 +120,13 @@
 <script setup>
 import { computed, onBeforeUpdate, ref, watch } from "vue";
 import {
-  useVueTable,
+  useTable,
   FlexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
+  stockFeatures,
+  tableFeatures,
+  createPaginatedRowModel,
+  createSortedRowModel,
+  createFilteredRowModel,
 } from "@tanstack/vue-table";
 const props = defineProps({
   title: String,
@@ -143,6 +144,13 @@ const props = defineProps({
 });
 const sidePage = ref(3);
 
+const features = tableFeatures({
+  ...stockFeatures,
+  paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
+  filteredRowModel: createFilteredRowModel(),
+});
+
 const sorting = ref([]);
 const filter = ref("");
 const currentPage = ref(0);
@@ -150,14 +158,10 @@ const pageSize = ref(
   props.maxPageSize && props.data.length ? props.data.length : props.pageSize
 );
 const columns = ref(props.columns);
-const table = computed(() =>
-  useVueTable({
-    data: props.data,
-    columns: columns.value,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+const table = useTable({
+    features,
+    data: computed(() => props.data),
+    columns,
     state: {
       get sorting() {
         return sorting.value;
@@ -178,27 +182,26 @@ const table = computed(() =>
           ? updaterOrValue(sorting.value)
           : updaterOrValue;
     },
-  })
-);
+  });
 
 const showedPage = ref(null);
 onBeforeUpdate(() => {
   if (filter.value !== "") {
     if (!showedPage.value) {
-      showedPage.value = table.value.getState().pagination.pageIndex;
+      showedPage.value = table.atoms.pagination.get().pageIndex;
     }
     // currentPage.value = 0;
-    if (table.value.getPageCount() <= currentPage.value) {
+    if (table.getPageCount() <= currentPage.value) {
       currentPage.value = 0;
     } else {
-      currentPage.value = table.value.getState().pagination.pageIndex;
+      currentPage.value = table.atoms.pagination.get().pageIndex;
     }
   } else {
     if (showedPage.value && showedPage.value !== currentPage.value) {
       currentPage.value = showedPage.value;
       showedPage.value = null;
     } else {
-      currentPage.value = table.value.getState().pagination.pageIndex;
+      currentPage.value = table.atoms.pagination.get().pageIndex;
     }
   }
   columns.value = [...props.columns];

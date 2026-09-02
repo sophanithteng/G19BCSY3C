@@ -24,14 +24,14 @@
         <thead class="text-center">
           <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <th v-for="header in headerGroup.headers" :key="header.id">
-              <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
+              <FlexRender :header="header" />
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="row in table.getRowModel().rows" :key="row.id">
             <td v-for="cell in row.getVisibleCells()" :key="cell.id">
-              <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+              <FlexRender :cell="cell" />
             </td>
           </tr>
         </tbody>
@@ -122,9 +122,10 @@
 <script setup>
 import { computed, ref, toRefs } from "vue";
 import {
-  useVueTable,
+  useTable,
   FlexRender,
-  getCoreRowModel,
+  stockFeatures,
+  tableFeatures,
 } from "@tanstack/vue-table";
 
 const emit = defineEmits(['searchChange']);
@@ -148,15 +149,17 @@ const { title, data, columns } = toRefs(props);
 // Local state
 const sidePage = ref(3);
 
+const features = tableFeatures({
+  ...stockFeatures,
+});
+
 // Table for rendering (no client-side pagination)
-const table = computed(() =>
-  useVueTable({
-    data: data.value,
-    columns: columns.value,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-  })
-);
+const table = useTable({
+  features,
+  data,
+  columns,
+  manualPagination: true,
+});
 
 // Event handlers
 function handleSearch() {

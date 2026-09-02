@@ -49,7 +49,7 @@ const columns = [
   },
   {
     accessorKey: "action",
-    header: () => [
+    header: () => h("span", {}, [
       "Actions",
       h(
         "button",
@@ -59,12 +59,12 @@ const columns = [
         },
         "Create"
       ),
-    ],
+    ]),
     cell: ({
       row: {
         original: { filename },
       },
-    }) => [
+    }) => h("span", {}, [
         // download btn
         h(
           "button",
@@ -85,7 +85,7 @@ const columns = [
           },
           h("i", { class: "fa fa-trash" })
         ),
-      ],
+      ]),
     enableSorting: false,
   },
 ];
