@@ -3,6 +3,6 @@ set -e
 
 # rm -f package-lock.json
 # wait $!
-# npm install
+npm install
 # wait $!
 npm run dev -- --host=0.0.0.0 --port=5173

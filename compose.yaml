@@ -32,6 +32,7 @@ services:
     working_dir: /app
     volumes:
       - ./vuejs-app:/app
+      - vuejs_node_modules:/app/node_modules
       - ./docker/vuejs/entrypoint.development.sh:/usr/local/bin/entrypoint.development.sh
 
     ports:
@@ -75,3 +76,4 @@ services:
 volumes:
   mysql_data:
   laravel_vendor:
+  vuejs_node_modules:
