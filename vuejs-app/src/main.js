@@ -1,23 +1,23 @@
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import 'admin-lte/dist/js/adminlte.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import "admin-lte/dist/js/adminlte.min.js";
+import "@/functions/echo.js";
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import App from './App.vue'
-import router from './router'
-import axios from 'axios';
-import { useUserStore } from '@/stores/user';
-import { apiVerify } from '@/functions/api/auth';
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import App from "./App.vue";
+import router from "./router";
+import axios from "axios";
+import { useUserStore } from "@/stores/user";
+import { apiVerify } from "@/functions/api/auth";
 
-const app = createApp(App)
+const app = createApp(App);
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 app.use(router);
-app.mount('#app');
-
+app.mount("#app");
 
 const userStore = useUserStore();
 // Set up Axios interceptor to add Authorization header dynamically
@@ -31,16 +31,9 @@ axios.interceptors.request.use((config) => {
 });
 
 router.beforeEach(async (to, from) => {
-  const { guarded, skipAuthCheck } = to.meta;
-  if (guarded === undefined || skipAuthCheck) { // public routes do not need token verification
-    return;
-  }
-
-  const token = userStore.getSanctumToken();
-  if (!token) {
-    if (guarded) {
-      return { name: 'auth.signin' };
-    }
+  const { guarded } = to.meta;
+  if (guarded === undefined) {
+    // if the route is not guarded, we don't need to verify the token
     return;
   }
 
@@ -49,13 +42,17 @@ router.beforeEach(async (to, from) => {
     const { data } = response;
     userStore.setState(data.user);
   } catch (error) {
-    userStore.reset();
+    if (error.response && error.response.status === 401) {
+      userStore.reset();
+    }
   }
 
-  if (guarded && !userStore.isAuthenticated) { // if the route is guarded and the user is not authenticated, redirect to signin page
-    return { name: 'auth.signin' };
+  if (guarded && !userStore.isAuthenticated) {
+    // if the route is guarded and the user is not authenticated, redirect to signin page
+    return { name: "auth.signin" };
   }
-  if (!guarded && userStore.isAuthenticated) { // if the route is not guarded and the user is authenticated, redirect to dashboard page
-    return { name: 'dashboard' };
+  if (!guarded && userStore.isAuthenticated) {
+    // if the route is not guarded and the user is authenticated, redirect to dashboard page
+    return { name: "dashboard" };
   }
 });
