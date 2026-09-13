@@ -39,6 +39,7 @@ use App\Http\Requests\Chat\UpdateChatMessageRequest;
 use App\Http\Resources\Chat\ChatMessageResource;
 use App\Models\ChatMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -629,7 +630,11 @@ class ChatController extends Controller
             'content' => $request->input('content'),
         ]);
 
-        broadcast(new MessageCreated($message, $chatId))->toOthers();
+        try {
+            broadcast(new MessageCreated($message, $chatId))->toOthers();
+        } catch (Exception $e) {
+            Log::warning('Chat message broadcast failed: ' . $e->getMessage());
+        }
 
         return response([
             'message' => 'Message created.',
@@ -659,7 +664,11 @@ class ChatController extends Controller
             'content' => $request->input('content'),
         ]);
 
-        broadcast(new MessageUpdated($message, $chatId))->toOthers();
+        try {
+            broadcast(new MessageUpdated($message, $chatId))->toOthers();
+        } catch (Exception $e) {
+            Log::warning('Chat message update broadcast failed: ' . $e->getMessage());
+        }
 
         return response([
             'message' => 'Message updated.',
@@ -686,7 +695,11 @@ class ChatController extends Controller
 
         $message->delete();
 
-        broadcast(new MessageDeleted($message->id, $chatId))->toOthers();
+        try {
+            broadcast(new MessageDeleted($message->id, $chatId))->toOthers();
+        } catch (Exception $e) {
+            Log::warning('Chat message delete broadcast failed: ' . $e->getMessage());
+        }
 
         return response([
             'message' => 'Message deleted.'
@@ -741,7 +754,11 @@ class ChatController extends Controller
             'mime_type' => $file->getMimeType(),
         ]);
 
-        broadcast(new MessageCreated($message, $chatId))->toOthers();
+        try {
+            broadcast(new MessageCreated($message, $chatId))->toOthers();
+        } catch (Exception $e) {
+            Log::warning('Image chat message broadcast failed: ' . $e->getMessage());
+        }
 
         return response([
             'message' => 'Image message created.',
@@ -775,7 +792,11 @@ class ChatController extends Controller
             'mime_type' => $file->getMimeType(),
         ]);
 
-        broadcast(new MessageCreated($message, $chatId))->toOthers();
+        try {
+            broadcast(new MessageCreated($message, $chatId))->toOthers();
+        } catch (Exception $e) {
+            Log::warning('Voice chat message broadcast failed: ' . $e->getMessage());
+        }
 
         return response([
             'message' => 'Voice message created.',
